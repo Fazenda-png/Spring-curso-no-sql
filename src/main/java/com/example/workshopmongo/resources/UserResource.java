@@ -1,5 +1,6 @@
 package com.example.workshopmongo.resources;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.workshopmongo.domain.User;
 import com.example.workshopmongo.dto.UserDTO;
@@ -32,5 +34,13 @@ public class UserResource {
 	public ResponseEntity<UserDTO> findById(@PathVariable String id) {
 		User obj = userService.findById(id);
 		return ResponseEntity.ok().body(new UserDTO(obj));
+	}
+
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> insert(UserDTO objDTO) {
+		User obj = userService.FromDTO(objDTO);
+		obj = userService.insert(obj);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+		return ResponseEntity.created(uri).build();
 	}
 }
